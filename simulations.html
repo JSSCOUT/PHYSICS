@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive PhET-style simulations — drag-and-drop Circuit Builder, Coulomb Sandbox, Magnetic Field Visualizer." />
+  <title>Simulations — ElectroMag</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/simulations.css" />
+</head>
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">⚡ <span>ElectroMag</span></a>
+      <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" role="list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="electricity.html">Electricity</a></li>
+        <li><a href="magnetism.html">Magnetism</a></li>
+        <li><a href="simulations.html" class="active" aria-current="page">Simulations</a></li>
+        <li><a href="sample-problems.html">Sample Problems</a></li>
+        <li><a href="formula-guide.html">Formula Guide</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <header class="page-header">
+      <h1>🔬 Interactive Simulations</h1>
+      <p>Drag components, draw wires, and watch physics happen in real time.</p>
+    </header>
+
+    <main>
+
+      <!-- ══════════════════════════════════════════════════
+           SIM 1 — DRAG-AND-DROP CIRCUIT BUILDER
+      ═══════════════════════════════════════════════════ -->
+      <section class="sim-section" id="circuit-sim" aria-labelledby="circuit-heading">
+        <div class="container">
+          <div class="sim-header">
+            <div>
+              <h2 id="circuit-heading">🔋 Circuit Builder</h2>
+              <p class="sim-desc">
+                <strong>Drag</strong> components from the tray onto the canvas.
+                <strong>Wire mode:</strong> click a node then another to connect.
+                <strong>Rotate mode:</strong> click a component to spin it 90°.
+                <strong>Cut mode:</strong> drag across a wire to slice it.
+                <strong>Select mode:</strong> drag to reposition. Press <kbd>Del</kbd> to delete.
+              </p>
+            </div>
+            <div class="sim-btn-group">
+              <button class="sim-tool-btn active" id="btn-wire-mode"   onclick="setWireMode(true)"  title="Wire mode: click nodes to connect (W)">✏️ Wire</button>
+              <button class="sim-tool-btn"         id="btn-select-mode" onclick="setWireMode(false)" title="Select &amp; drag components (S)">↖ Select</button>
+              <button class="sim-tool-btn"         id="btn-rotate-mode" onclick="setRotateMode()"   title="Click a component to rotate 90° (R)">🔄 Rotate</button>
+              <button class="sim-tool-btn"         id="btn-cut-mode"    onclick="setCutMode()"      title="Drag across a wire to cut it (C)">✂️ Cut</button>
+              <button class="sim-reset-btn" onclick="resetCircuit()">↺ Reset</button>
+            </div>
+          </div>
+
+          <!-- Component tray -->
+          <div class="component-tray" id="componentTray" aria-label="Component tray — drag items to canvas">
+            <div class="tray-label">Components — drag to canvas:</div>
+            <div class="tray-items">
+              <div class="tray-item" draggable="true" data-type="battery"   title="Battery (9 V)">🔋 Battery</div>
+              <div class="tray-item" draggable="true" data-type="resistor"  title="Resistor (10 Ω)">⬛ Resistor</div>
+              <div class="tray-item" draggable="true" data-type="bulb"      title="Light Bulb (5 Ω)">💡 Bulb</div>
+              <div class="tray-item" draggable="true" data-type="switch"    title="Switch (open)">🔀 Switch</div>
+              <div class="tray-item" draggable="true" data-type="capacitor" title="Capacitor (100 μF)">⚡ Capacitor</div>
+            </div>
+          </div>
+
+          <div class="sim-layout">
+            <div class="sim-canvas-wrap" id="circuitWrap">
+              <canvas id="circuitCanvas" width="660" height="420" aria-label="Circuit builder canvas"></canvas>
+              <div class="canvas-hint" id="circuitHint">Drop components here, then connect nodes with Wire mode</div>
+            </div>
+
+            <div class="sim-controls">
+              <div class="sim-readout-grid">
+                <div class="sim-readout accent">
+                  <span class="readout-label">Total Voltage</span>
+                  <span class="readout-value" id="cir-v-val">— V</span>
+                </div>
+                <div class="sim-readout accent">
+                  <span class="readout-label">Current</span>
+                  <span class="readout-value" id="cir-i-val">— A</span>
+                </div>
+                <div class="sim-readout">
+                  <span class="readout-label">Total R</span>
+                  <span class="readout-value" id="cir-r-val">— Ω</span>
+                </div>
+                <div class="sim-readout">
+                  <span class="readout-label">Power</span>
+                  <span class="readout-value" id="cir-p-val">— W</span>
+                </div>
+              </div>
+
+              <div class="circuit-status" id="circuitStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">No circuit yet</span>
+              </div>
+
+              <div class="sim-formula-box">
+                <p><strong>Ohm's Law:</strong> V = I × R</p>
+                <p><strong>Power:</strong> P = V × I</p>
+                <p style="margin-top:0.5rem;font-size:0.8rem;color:#555;">
+                  Series: R<sub>total</sub> = R₁ + R₂ + …<br>
+                  Parallel: 1/R = 1/R₁ + 1/R₂ + …
+                </p>
+                <p style="margin-top:0.5rem;font-size:0.8rem;color:#777;border-top:1px solid #c5cae9;padding-top:0.4rem;">
+                  <strong>Shortcuts:</strong><br>
+                  <kbd>W</kbd> Wire &nbsp; <kbd>S</kbd> Select<br>
+                  <kbd>R</kbd> Rotate &nbsp; <kbd>C</kbd> Cut<br>
+                  <kbd>Del</kbd> Delete selected
+                </p>
+              </div>
+
+              <div class="component-props" id="componentProps" style="display:none;">
+                <div class="props-title" id="propsTitle">Component</div>
+                <div class="props-body" id="propsBody"></div>
+              </div>
+
+              <button class="sim-delete-btn" id="deleteBtn" onclick="deleteSelected()" style="display:none;">🗑 Delete Selected</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════
+           SIM 2 — COULOMB'S LAW SANDBOX
+      ═══════════════════════════════════════════════════ -->
+      <section class="sim-section sim-section-alt" id="coulomb-sim" aria-labelledby="coulomb-heading">
+        <div class="container">
+          <div class="sim-header">
+            <div>
+              <h2 id="coulomb-heading">⚛️ Coulomb's Law Sandbox</h2>
+              <p class="sim-desc">
+                <strong>Drag</strong> any charge anywhere. <strong>Double-click</strong> a charge to flip its sign.
+                <strong>Right-click</strong> the canvas to add a new charge. Adjust magnitudes with sliders.
+                Force arrows and field lines update live.
+              </p>
+            </div>
+            <div class="sim-btn-group">
+              <button class="sim-tool-btn active" id="btn-show-field" onclick="toggleFieldLines()" title="Toggle field lines">🌐 Field Lines</button>
+              <button class="sim-reset-btn" onclick="resetCoulomb()">↺ Reset</button>
+            </div>
+          </div>
+
+          <div class="sim-layout">
+            <div class="sim-canvas-wrap">
+              <canvas id="coulombCanvas" width="660" height="420" aria-label="Coulomb sandbox canvas"></canvas>
+            </div>
+
+            <div class="sim-controls">
+              <div class="sim-readout-grid">
+                <div class="sim-readout">
+                  <span class="readout-label">Charges</span>
+                  <span class="readout-value" id="col-n-val">2</span>
+                </div>
+                <div class="sim-readout accent">
+                  <span class="readout-label">Max Force</span>
+                  <span class="readout-value" id="col-f-val">—</span>
+                </div>
+              </div>
+
+              <div class="slider-group">
+                <label for="col-q-all">All charge magnitudes: <strong id="col-q-lbl">3 μC</strong></label>
+                <input type="range" id="col-q-all" min="0.5" max="10" value="3" step="0.5"
+                       oninput="updateAllCharges()" aria-label="Adjust all charge magnitudes" />
+              </div>
+
+              <div class="sim-formula-box">
+                <p><strong>F = kq₁q₂ / r²</strong></p>
+                <p style="font-size:0.82rem;color:#666;">k = 9.0 × 10⁹ N·m²/C²</p>
+                <p style="font-size:0.82rem;margin-top:0.5rem;">
+                  🔴 Positive &nbsp;|&nbsp; 🔵 Negative<br>
+                  <strong>Drag</strong> to move<br>
+                  <strong>Double-click</strong> to flip sign<br>
+                  <strong>Right-click canvas</strong> to add charge
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════
+           SIM 3 — MAGNETIC FIELD VISUALIZER
+      ═══════════════════════════════════════════════════ -->
+      <section class="sim-section" id="magfield-sim" aria-labelledby="magfield-heading">
+        <div class="container">
+          <div class="sim-header">
+            <div>
+              <h2 id="magfield-heading">🧲 Magnetic Field Visualizer</h2>
+              <p class="sim-desc">
+                <strong>Drag the wire</strong> anywhere on the canvas.
+                <strong>Click the wire</strong> to flip current direction.
+                Use the slider to change current strength. A <strong>probe</strong> follows your mouse and shows the exact B-field at that point.
+              </p>
+            </div>
+            <div class="sim-btn-group">
+              <button class="sim-tool-btn active" id="btn-show-vectors" onclick="toggleVectors()" title="Toggle field vectors">🧭 Vectors</button>
+              <button class="sim-reset-btn" onclick="resetMagField()">↺ Reset</button>
+            </div>
+          </div>
+
+          <div class="sim-layout">
+            <div class="sim-canvas-wrap">
+              <canvas id="magfieldCanvas" width="660" height="420" aria-label="Magnetic field canvas"></canvas>
+            </div>
+
+            <div class="sim-controls">
+              <div class="sim-readout-grid">
+                <div class="sim-readout">
+                  <span class="readout-label">Current (A)</span>
+                  <span class="readout-value" id="mag-i-val">5.0 A</span>
+                </div>
+                <div class="sim-readout accent">
+                  <span class="readout-label">B at probe (μT)</span>
+                  <span class="readout-value" id="mag-b-val">—</span>
+                </div>
+                <div class="sim-readout">
+                  <span class="readout-label">Probe dist (m)</span>
+                  <span class="readout-value" id="mag-r-val">—</span>
+                </div>
+                <div class="sim-readout accent">
+                  <span class="readout-label">Direction</span>
+                  <span class="readout-value" id="mag-dir-val">⊙ Out</span>
+                </div>
+              </div>
+
+              <div class="slider-group">
+                <label for="mag-current">Current: <strong id="mag-i-lbl">5 A</strong></label>
+                <input type="range" id="mag-current" min="1" max="30" value="5" step="0.5"
+                       oninput="updateMagField()" aria-label="Adjust current" />
+              </div>
+
+              <div class="sim-formula-box">
+                <p><strong>B = μ₀I / (2πr)</strong></p>
+                <p style="font-size:0.82rem;color:#666;">μ₀ = 4π × 10⁻⁷ T·m/A</p>
+                <p style="font-size:0.82rem;margin-top:0.5rem;">
+                  <strong>Drag wire</strong> to reposition<br>
+                  <strong>Click wire</strong> to flip direction<br>
+                  <strong>Hover</strong> to probe field strength
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer role="contentinfo">
+      <!-- <p>&copy; 2026 <a href="index.html">ElectroMag Calculator</a>. Built for students, by students.</p> -->
+    </footer>
+  </div>
+
+  <script src="js/calculators.js"></script>
+  <script src="js/simulations.js"></script>
+</body>
+</html>

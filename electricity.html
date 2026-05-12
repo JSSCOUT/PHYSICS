@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Electricity calculators — Ohm's Law, Electric Power, Coulomb's Law, Electric Field." />
+  <title>Electricity Calculators — ElectroMag</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ── Navbar ── -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">⚡ <span>ElectroMag</span></a>
+      <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" role="list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="electricity.html" class="active" aria-current="page">Electricity</a></li>
+        <li><a href="magnetism.html">Magnetism</a></li>
+        <li><a href="simulations.html">Simulations</a></li>
+        <li><a href="sample-problems.html">Sample Problems</a></li>
+        <li><a href="formula-guide.html">Formula Guide</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-content">
+
+    <!-- ── Page Header ── -->
+    <header class="page-header">
+      <h1>⚡ Electricity Calculators</h1>
+      <p>Solve Ohm's Law, Electric Power, Coulomb's Law, and Electric Field problems instantly.</p>
+    </header>
+
+    <main>
+      <section class="section" aria-labelledby="electricity-heading">
+        <div class="container">
+          <h2 class="section-title" id="electricity-heading">Choose a Calculator</h2>
+          <p class="section-subtitle">Enter your known values and select what you want to find.</p>
+
+          <div class="calc-grid">
+
+            <!-- ── 1. Ohm's Law ── -->
+            <article class="calc-card" aria-labelledby="ohm-heading">
+              <h3 id="ohm-heading">🔋 Ohm's Law</h3>
+              <p class="calc-formula">V = I × R</p>
+
+              <div class="form-group">
+                <label for="ohm-solve-for">Solve for:</label>
+                <select id="ohm-solve-for" onchange="updateOhmInputs()" aria-label="Select what to solve for in Ohm's Law">
+                  <option value="voltage">Voltage (V)</option>
+                  <option value="current">Current (I)</option>
+                  <option value="resistance">Resistance (R)</option>
+                </select>
+              </div>
+
+              <!-- Voltage input -->
+              <div class="form-group" id="ohm-group-v" style="display:none;">
+                <label for="ohm-voltage">Voltage (V) — Volts</label>
+                <input type="number" id="ohm-voltage" placeholder="e.g. 12" step="any" aria-label="Voltage in Volts" />
+              </div>
+
+              <!-- Current input -->
+              <div class="form-group" id="ohm-group-i">
+                <label for="ohm-current">Current (I) — Amperes</label>
+                <input type="number" id="ohm-current" placeholder="e.g. 2" step="any" aria-label="Current in Amperes" />
+              </div>
+
+              <!-- Resistance input -->
+              <div class="form-group" id="ohm-group-r">
+                <label for="ohm-resistance">Resistance (R) — Ohms (Ω)</label>
+                <input type="number" id="ohm-resistance" placeholder="e.g. 10" step="any" aria-label="Resistance in Ohms" />
+              </div>
+
+              <button class="btn-calculate" onclick="calculateOhm()" aria-label="Calculate Ohm's Law">
+                Calculate
+              </button>
+
+              <div class="result-box" id="ohm-result" role="status" aria-live="polite">
+                <div class="result-value"></div>
+                <p class="result-explanation"></p>
+              </div>
+            </article>
+
+            <!-- ── 2. Electric Power ── -->
+            <article class="calc-card" aria-labelledby="power-heading">
+              <h3 id="power-heading">💡 Electric Power</h3>
+              <p class="calc-formula">P = V × I</p>
+
+              <div class="form-group">
+                <label for="power-solve-for">Solve for:</label>
+                <select id="power-solve-for" onchange="updatePowerInputs()" aria-label="Select what to solve for in Electric Power">
+                  <option value="power">Power (P)</option>
+                  <option value="voltage">Voltage (V)</option>
+                  <option value="current">Current (I)</option>
+                </select>
+              </div>
+
+              <!-- Power input -->
+              <div class="form-group" id="power-group-p" style="display:none;">
+                <label for="power-power">Power (P) — Watts</label>
+                <input type="number" id="power-power" placeholder="e.g. 600" step="any" aria-label="Power in Watts" />
+              </div>
+
+              <!-- Voltage input -->
+              <div class="form-group" id="power-group-v">
+                <label for="power-voltage">Voltage (V) — Volts</label>
+                <input type="number" id="power-voltage" placeholder="e.g. 120" step="any" aria-label="Voltage in Volts" />
+              </div>
+
+              <!-- Current input -->
+              <div class="form-group" id="power-group-i">
+                <label for="power-current">Current (I) — Amperes</label>
+                <input type="number" id="power-current" placeholder="e.g. 5" step="any" aria-label="Current in Amperes" />
+              </div>
+
+              <button class="btn-calculate" onclick="calculatePower()" aria-label="Calculate Electric Power">
+                Calculate
+              </button>
+
+              <div class="result-box" id="power-result" role="status" aria-live="polite">
+                <div class="result-value"></div>
+                <p class="result-explanation"></p>
+              </div>
+            </article>
+
+            <!-- ── 3. Coulomb's Law ── -->
+            <article class="calc-card" aria-labelledby="coulomb-heading">
+              <h3 id="coulomb-heading">⚛️ Coulomb's Law</h3>
+              <p class="calc-formula">F = k·q₁·q₂ / r² &nbsp;(k = 9.0×10⁹ N·m²/C²)</p>
+
+              <div class="form-group">
+                <label for="coulomb-q1">Charge q₁ — Coulombs (C)</label>
+                <input type="number" id="coulomb-q1" placeholder="e.g. 2e-6" step="any" aria-label="Charge q1 in Coulombs" />
+              </div>
+
+              <div class="form-group">
+                <label for="coulomb-q2">Charge q₂ — Coulombs (C)</label>
+                <input type="number" id="coulomb-q2" placeholder="e.g. 3e-6" step="any" aria-label="Charge q2 in Coulombs" />
+              </div>
+
+              <div class="form-group">
+                <label for="coulomb-r">Distance r — Meters (m)</label>
+                <input type="number" id="coulomb-r" placeholder="e.g. 0.05" step="any" aria-label="Distance r in Meters" />
+              </div>
+
+              <button class="btn-calculate" onclick="calculateCoulomb()" aria-label="Calculate Coulomb's Law">
+                Calculate
+              </button>
+
+              <div class="result-box" id="coulomb-result" role="status" aria-live="polite">
+                <div class="result-value"></div>
+                <p class="result-explanation"></p>
+              </div>
+            </article>
+
+            <!-- ── 4. Electric Field ── -->
+            <article class="calc-card" aria-labelledby="efield-heading">
+              <h3 id="efield-heading">🌐 Electric Field</h3>
+              <p class="calc-formula">E = k·Q / r² &nbsp;(k = 9.0×10⁹ N·m²/C²)</p>
+
+              <div class="form-group">
+                <label for="efield-Q">Source Charge Q — Coulombs (C)</label>
+                <input type="number" id="efield-Q" placeholder="e.g. 5e-6" step="any" aria-label="Source charge Q in Coulombs" />
+              </div>
+
+              <div class="form-group">
+                <label for="efield-r">Distance r — Meters (m)</label>
+                <input type="number" id="efield-r" placeholder="e.g. 0.1" step="any" aria-label="Distance r in Meters" />
+              </div>
+
+              <button class="btn-calculate" onclick="calculateElectricField()" aria-label="Calculate Electric Field">
+                Calculate
+              </button>
+
+              <div class="result-box" id="efield-result" role="status" aria-live="polite">
+                <div class="result-value"></div>
+                <p class="result-explanation"></p>
+              </div>
+            </article>
+
+          </div><!-- end .calc-grid -->
+        </div>
+      </section>
+    </main>
+
+    <!-- ── Footer ── -->
+    <footer role="contentinfo">
+      <!-- <p>&copy; 2026 <a href="index.html">ElectroMag Calculator</a>. Built for students, by students.</p> -->
+    </footer>
+
+  </div><!-- end .page-content -->
+
+  <script src="js/calculators.js"></script>
+</body>
+</html>

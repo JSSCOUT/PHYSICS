@@ -1,0 +1,709 @@
+/* ============================================================
+   ElectroMag Calculator — style.css
+   Color scheme:
+     Primary:   #1a237e (deep blue)
+     Secondary: #1565c0 (electric blue)
+     Accent:    #ffa000 (amber)
+     BG:        #ffffff / #f5f7ff
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f5f7ff;
+  color: #212121;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4 {
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h1 { font-size: clamp(2rem, 5vw, 3rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+h3 { font-size: 1.25rem; }
+
+p { margin-bottom: 0.75rem; }
+
+/* ── Navbar ── */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #1a237e;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.nav-logo {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-logo span {
+  color: #ffa000;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-links a {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  background-color: rgba(255,255,255,0.15);
+  color: #ffffff;
+}
+
+.nav-links a.active {
+  background-color: #ffa000;
+  color: #1a237e;
+  font-weight: 700;
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 6px;
+  border: none;
+  background: transparent;
+}
+
+.hamburger span {
+  display: block;
+  width: 26px;
+  height: 3px;
+  background: #ffffff;
+  border-radius: 3px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+/* ── Page offset for fixed navbar ── */
+.page-content {
+  padding-top: 64px;
+}
+
+/* ── Hero Section ── */
+.hero {
+  background: linear-gradient(135deg, #1a237e 0%, #1565c0 60%, #0288d1 100%);
+  color: #ffffff;
+  text-align: center;
+  padding: 5rem 1.5rem 4rem;
+}
+
+.hero h1 {
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.hero h1 span {
+  color: #ffa000;
+}
+
+.hero p {
+  font-size: 1.15rem;
+  max-width: 640px;
+  margin: 0 auto 2rem;
+  opacity: 0.92;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-block;
+  padding: 0.7rem 1.6rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+}
+
+.btn-primary {
+  background-color: #ffa000;
+  color: #1a237e;
+}
+
+.btn-primary:hover {
+  background-color: #ffb300;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: #ffffff;
+  border: 2px solid rgba(255,255,255,0.7);
+}
+
+.btn-outline:hover {
+  background-color: rgba(255,255,255,0.12);
+  border-color: #ffffff;
+}
+
+.btn-calculate {
+  background-color: #ffa000;
+  color: #1a237e;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.5rem;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-calculate:hover {
+  background-color: #ffb300;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255,160,0,0.35);
+}
+
+/* ── Section Wrapper ── */
+.section {
+  padding: 4rem 1.5rem;
+}
+
+.section-alt {
+  background-color: #eef1fb;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  text-align: center;
+  color: #1a237e;
+  margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: #555;
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+}
+
+/* ── Feature Cards (Home) ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.feature-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(26,35,126,0.08);
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-top: 4px solid #1565c0;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(26,35,126,0.14);
+}
+
+.feature-icon {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+  color: #1a237e;
+  margin-bottom: 0.6rem;
+}
+
+.feature-card p {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 0;
+}
+
+/* ── Page Header Banner ── */
+.page-header {
+  background: linear-gradient(135deg, #1a237e 0%, #1565c0 100%);
+  color: #ffffff;
+  padding: 3rem 1.5rem 2.5rem;
+  text-align: center;
+}
+
+.page-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  opacity: 0.88;
+  font-size: 1.05rem;
+  margin-bottom: 0;
+}
+
+/* ── Calculator Cards ── */
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.calc-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(26,35,126,0.09);
+  border-top: 4px solid #ffa000;
+  transition: box-shadow 0.2s;
+}
+
+.calc-card:hover {
+  box-shadow: 0 8px 28px rgba(26,35,126,0.14);
+}
+
+.calc-card h3 {
+  color: #1a237e;
+  margin-bottom: 0.3rem;
+}
+
+.calc-formula {
+  font-size: 0.9rem;
+  color: #1565c0;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  font-style: italic;
+}
+
+/* ── Form Elements ── */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.35rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid #c5cae9;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  background: #f8f9ff;
+  color: #212121;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #1565c0;
+  box-shadow: 0 0 0 3px rgba(21,101,192,0.12);
+  background: #ffffff;
+}
+
+.form-group input::placeholder {
+  color: #aaa;
+}
+
+/* ── Result Box ── */
+.result-box {
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  background: #e3f2fd;
+  border-radius: 10px;
+  border-left: 4px solid #1565c0;
+  display: none;
+}
+
+.result-box.show {
+  display: block;
+}
+
+.result-box.error {
+  background: #fce4ec;
+  border-left-color: #e53935;
+}
+
+.result-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1a237e;
+  margin-bottom: 0.3rem;
+}
+
+.result-explanation {
+  font-size: 0.88rem;
+  color: #444;
+  margin-bottom: 0;
+}
+
+.result-box.error .result-value {
+  font-size: 1rem;
+  color: #c62828;
+}
+
+/* ── Sample Problems ── */
+.problems-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.problem-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 4px 18px rgba(26,35,126,0.08);
+  border-left: 5px solid #ffa000;
+}
+
+.problem-card h3 {
+  color: #1a237e;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.problem-step {
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+}
+
+.problem-step strong {
+  color: #1565c0;
+  font-weight: 700;
+  min-width: 90px;
+  display: inline-block;
+}
+
+.problem-answer {
+  margin-top: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: #e8f5e9;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #2e7d32;
+  font-size: 1rem;
+}
+
+/* ── Formula Guide ── */
+.formula-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(26,35,126,0.08);
+}
+
+.formula-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  font-size: 0.93rem;
+}
+
+.formula-table thead {
+  background: #1a237e;
+  color: #ffffff;
+}
+
+.formula-table thead th {
+  padding: 0.9rem 1.1rem;
+  text-align: left;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.formula-table tbody tr:nth-child(even) {
+  background: #f0f4ff;
+}
+
+.formula-table tbody tr:hover {
+  background: #e3eaff;
+}
+
+.formula-table tbody td {
+  padding: 0.8rem 1.1rem;
+  border-bottom: 1px solid #e0e4f0;
+  vertical-align: top;
+}
+
+.formula-table tbody td:nth-child(2) {
+  font-weight: 700;
+  color: #1565c0;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+/* Constants section */
+.constants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.constant-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 3px 14px rgba(26,35,126,0.08);
+  border-left: 4px solid #1565c0;
+}
+
+.constant-card .constant-name {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.constant-card .constant-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a237e;
+}
+
+/* ── About Page ── */
+.about-description {
+  max-width: 760px;
+  margin: 0 auto 1rem;
+  font-size: 1.05rem;
+  color: #444;
+  text-align: center;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.team-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 2rem 1.25rem;
+  text-align: center;
+  box-shadow: 0 4px 18px rgba(26,35,126,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-top: 4px solid #1565c0;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 28px rgba(26,35,126,0.14);
+}
+
+.team-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a237e, #1565c0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.team-card h3 {
+  color: #1a237e;
+  margin-bottom: 0.3rem;
+}
+
+.team-role {
+  font-size: 0.85rem;
+  color: #ffa000;
+  font-weight: 600;
+}
+
+.tech-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.tech-badge {
+  background: #1a237e;
+  color: #ffffff;
+  padding: 0.5rem 1.25rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* ── Footer ── */
+footer {
+  background-color: #1a237e;
+  color: rgba(255,255,255,0.8);
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 0.88rem;
+}
+
+footer a {
+  color: #ffa000;
+  font-weight: 600;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* ── Utility ── */
+.text-center { text-align: center; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mb-0 { margin-bottom: 0; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background-color: #1a237e;
+    flex-direction: column;
+    padding: 1rem 1.5rem 1.5rem;
+    gap: 0.25rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links a {
+    padding: 0.65rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+
+  .hero {
+    padding: 4rem 1.25rem 3rem;
+  }
+
+  .calc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .problem-card {
+    padding: 1.25rem 1.25rem;
+  }
+
+  .formula-table thead th,
+  .formula-table tbody td {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .section {
+    padding: 2.5rem 1.25rem;
+  }
+
+  .page-header {
+    padding: 2.5rem 1.25rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 1.8rem; }
+  .hero p { font-size: 1rem; }
+  .btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+  .result-value { font-size: 1.2rem; }
+}

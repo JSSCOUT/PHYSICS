@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Magnetism calculators — Magnetic Force on a Wire and Magnetic Force on a Charge." />
+  <title>Magnetism Calculators — ElectroMag</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ── Navbar ── -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">⚡ <span>ElectroMag</span></a>
+      <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" role="list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="electricity.html">Electricity</a></li>
+        <li><a href="magnetism.html" class="active" aria-current="page">Magnetism</a></li>
+        <li><a href="simulations.html">Simulations</a></li>
+        <li><a href="sample-problems.html">Sample Problems</a></li>
+        <li><a href="formula-guide.html">Formula Guide</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-content">
+
+    <!-- ── Page Header ── -->
+    <header class="page-header">
+      <h1>🧲 Magnetism Calculators</h1>
+      <p>Calculate magnetic forces on current-carrying wires and moving charges.</p>
+    </header>
+
+    <main>
+      <section class="section" aria-labelledby="magnetism-heading">
+        <div class="container">
+          <h2 class="section-title" id="magnetism-heading">Magnetic Force Calculators</h2>
+          <p class="section-subtitle">Enter your known values and calculate the magnetic force.</p>
+
+          <div class="calc-grid">
+
+            <!-- ── 1. Magnetic Force on a Wire ── -->
+            <article class="calc-card" aria-labelledby="wire-heading">
+              <h3 id="wire-heading">🔌 Magnetic Force on a Wire</h3>
+              <p class="calc-formula">F = B · I · L · sin θ</p>
+
+              <div class="form-group">
+                <label for="wire-B">Magnetic Field (B) — Tesla (T)</label>
+                <input type="number" id="wire-B" placeholder="e.g. 0.5" step="any" aria-label="Magnetic field B in Tesla" />
+              </div>
+
+              <div class="form-group">
+                <label for="wire-I">Current (I) — Amperes (A)</label>
+                <input type="number" id="wire-I" placeholder="e.g. 3" step="any" aria-label="Current I in Amperes" />
+              </div>
+
+              <div class="form-group">
+                <label for="wire-L">Length of Wire (L) — Meters (m)</label>
+                <input type="number" id="wire-L" placeholder="e.g. 2" step="any" aria-label="Length of wire L in Meters" />
+              </div>
+
+              <div class="form-group">
+                <label for="wire-theta">Angle θ — Degrees (°)</label>
+                <input type="number" id="wire-theta" placeholder="e.g. 90" step="any" aria-label="Angle theta in degrees" />
+              </div>
+
+              <button class="btn-calculate" onclick="calculateMagneticForceWire()" aria-label="Calculate magnetic force on wire">
+                Calculate
+              </button>
+
+              <div class="result-box" id="wire-result" role="status" aria-live="polite">
+                <div class="result-value"></div>
+                <p class="result-explanation"></p>
+              </div>
+            </article>
+
+            <!-- ── 2. Magnetic Force on a Charge ── -->
+            <article class="calc-card" aria-labelledby="charge-heading">
+              <h3 id="charge-heading">⚡ Magnetic Force on a Charge</h3>
+              <p class="calc-formula">F = q · v · B · sin θ</p>
+
+              <div class="form-group">
+                <label for="charge-q">Charge (q) — Coulombs (C)</label>
+                <input type="number" id="charge-q" placeholder="e.g. 1.6e-19" step="any" aria-label="Charge q in Coulombs" />
+              </div>
+
+              <div class="form-group">
+                <label for="charge-v">Velocity (v) — Meters per second (m/s)</label>
+                <input type="number" id="charge-v" placeholder="e.g. 1e6" step="any" aria-label="Velocity v in meters per second" />
+              </div>
+
+              <div class="form-group">
+                <label for="charge-B">Magnetic Field (B) — Tesla (T)</label>
+                <input type="number" id="charge-B" placeholder="e.g. 0.3" step="any" aria-label="Magnetic field B in Tesla" />
+              </div>
+
+              <div class="form-group">
+                <label for="charge-theta">Angle θ — Degrees (°)</label>
+                <input type="number" id="charge-theta" placeholder="e.g. 90" step="any" aria-label="Angle theta in degrees" />
+              </div>
+
+              <button class="btn-calculate" onclick="calculateMagneticForceCharge()" aria-label="Calculate magnetic force on charge">
+                Calculate
+              </button>
+
+              <div class="result-box" id="charge-result" role="status" aria-live="polite">
+                <div class="result-value"></div>
+                <p class="result-explanation"></p>
+              </div>
+            </article>
+
+          </div><!-- end .calc-grid -->
+
+          <!-- ── Info Box ── -->
+          <div style="margin-top:2.5rem; background:#e3f2fd; border-radius:12px; padding:1.5rem 2rem; border-left:4px solid #1565c0;">
+            <h3 style="color:#1a237e; margin-bottom:0.75rem;">📌 Key Concepts</h3>
+            <ul style="list-style:disc; padding-left:1.25rem; color:#333; font-size:0.95rem; line-height:1.8;">
+              <li>The angle θ is measured between the direction of current (or velocity) and the magnetic field <strong>B</strong>.</li>
+              <li>When θ = 90°, sin θ = 1, giving the <strong>maximum force</strong>.</li>
+              <li>When θ = 0° or 180°, sin θ = 0, so the force is <strong>zero</strong>.</li>
+              <li>The direction of the force is given by the <strong>right-hand rule</strong> (not calculated here).</li>
+              <li>1 Tesla (T) = 1 kg/(A·s²) = 1 N/(A·m)</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <!-- ── Footer ── -->
+    <footer role="contentinfo">
+      <!-- <p>&copy; 2026 <a href="index.html">ElectroMag Calculator</a>. Built for students, by students.</p> -->
+    </footer>
+
+  </div><!-- end .page-content -->
+
+  <script src="js/calculators.js"></script>
+</body>
+</html>
