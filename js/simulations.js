@@ -164,27 +164,6 @@ function arrowHead(ctx, x1, y1, x2, y2, sz) {
     return nodePos(comp)[ref.idx];
   }
 
-  /* ── Circuit solver ──────────────────────────────────────────
-     Correct approach: treat each component node as a graph vertex.
-     Edges exist ONLY via explicit wires (not by jumping through
-     component internals automatically).
-
-     A closed series circuit requires:
-       1. At least one battery and at least one other component.
-       2. Every component node has at least one wire attached.
-       3. Starting from battery node-0, following ONLY wires (which
-          connect one component-node to another), we can reach
-          battery node-1 by passing through every other component
-          exactly once (i.e. a real loop exists).
-
-     Algorithm:
-       - Build a wire-only adjacency map: compId:nodeIdx → [compId:nodeIdx, ...]
-       - From battery node-0, BFS/DFS along wires only.
-       - When we arrive at a node, we may "cross" through its component
-         to the other node — but ONLY if that component has a wire on
-         the other side too (i.e. the other node also has wires).
-       - The circuit is closed if we can reach battery node-1.
-  ─────────────────────────────────────────────────────────── */
   function solveCircuit() {
     if (components.length < 2) return null;
 
@@ -207,40 +186,29 @@ function arrowHead(ctx, x1, y1, x2, y2, sz) {
       wireAdj[nk(w.n2.compId, w.n2.idx)].push(nk(w.n1.compId, w.n1.idx));
     });
 
-    // A node is "wired" if it has at least one wire attached
     function isWired(compId, idx) {
       return wireAdj[nk(compId, idx)].length > 0;
     }
 
-    // Every component node must have at least one wire — otherwise the
-    // circuit is definitely open (dangling terminal).
     const allWired = components.every(c => isWired(c.id, 0) && isWired(c.id, 1));
     if (!allWired) return null;
 
-    // BFS: start at battery[0] node-0, try to reach battery[0] node-1.
-    // Movement rules:
-    //   - Follow a wire to arrive at a foreign node (compB:idxB).
-    //   - Cross through compB to its other node (compB:otherIdx),
-    //     but only if we haven't already used compB.
-    //   - Repeat until we reach the target or exhaust options.
     const bat = batteries[0];
-    const startKey  = nk(bat.id, 0);
-    const targetKey = nk(bat.id, 1);
+    const startKey  = nk(bat.id, 0);  // battery node 0 = left = (+) terminal
+    const targetKey = nk(bat.id, 1);  // battery node 1 = right = (−) terminal
 
-    // State: { nodeKey, usedComps: Set of compIds already crossed }
-    // We use DFS with visited states to avoid infinite loops.
-    const visitedStates = new Set();
+    const queue = [{ nodeKey: startKey, usedComps: new Set([bat.id]) }];
+    let isClosed = false;
 
-    function dfs(nodeKey, usedComps) {
-      const stateKey = nodeKey + '|' + [...usedComps].sort().join(',');
-      if (visitedStates.has(stateKey)) return false;
-      visitedStates.add(stateKey);
+    while (queue.length > 0 && !isClosed) {
+      const { nodeKey, usedComps } = queue.shift();
 
       // Follow each wire from this node
       for (const neighborKey of (wireAdj[nodeKey] || [])) {
         if (neighborKey === targetKey) {
           // We reached the other battery terminal — circuit is closed!
-          return true;
+          isClosed = true;
+          break;
         }
 
         // Parse neighbor: compId:idx
@@ -258,14 +226,9 @@ function arrowHead(ctx, x1, y1, x2, y2, sz) {
         const newUsed = new Set(usedComps);
         newUsed.add(nbCompId);
 
-        if (dfs(crossKey, newUsed)) return true;
+        queue.push({ nodeKey: crossKey, usedComps: newUsed });
       }
-      return false;
     }
-
-    // Mark battery as already used so we don't re-enter it mid-path
-    const initialUsed = new Set([bat.id]);
-    const isClosed = dfs(startKey, initialUsed);
 
     if (!isClosed) return null;
 
@@ -283,7 +246,50 @@ function arrowHead(ctx, x1, y1, x2, y2, sz) {
 
     const I = totalV / totalR;
     const P = totalV * I;
-    return { V: totalV, R: totalR, I, P, closed: true };
+
+    // ── Build directed wire flow map ──
+    // Directed DFS from battery (+) terminal (node 0).
+    // For each wire we encounter, record whether current flows n1→n2 (true) or n2→n1 (false).
+    // This is topology-driven — completely independent of which end the user drew from.
+    const wireFlow = {}; // wireId → true (n1→n2) | false (n2→n1)
+    const visitedNodes = new Set();
+    const stack = [nk(bat.id, 0)];
+    visitedNodes.add(nk(bat.id, 0));
+
+    while (stack.length) {
+      const curKey = stack.pop();
+
+      wires.forEach(wr => {
+        const k1 = nk(wr.n1.compId, wr.n1.idx);
+        const k2 = nk(wr.n2.compId, wr.n2.idx);
+
+        if (k1 === curKey && !visitedNodes.has(k2)) {
+          // Current arrives at k1 (n1 side) → flows n1→n2
+          wireFlow[wr.id] = true;
+          visitedNodes.add(k2);
+          // Cross through the component at k2 to its other node
+          const [cid, ci] = k2.split(':').map(Number);
+          const otherKey = nk(cid, ci === 0 ? 1 : 0);
+          if (!visitedNodes.has(otherKey)) {
+            visitedNodes.add(otherKey);
+            stack.push(otherKey);
+          }
+        } else if (k2 === curKey && !visitedNodes.has(k1)) {
+          // Current arrives at k2 (n2 side) → flows n2→n1
+          wireFlow[wr.id] = false;
+          visitedNodes.add(k1);
+          // Cross through the component at k1 to its other node
+          const [cid, ci] = k1.split(':').map(Number);
+          const otherKey = nk(cid, ci === 0 ? 1 : 0);
+          if (!visitedNodes.has(otherKey)) {
+            visitedNodes.add(otherKey);
+            stack.push(otherKey);
+          }
+        }
+      });
+    }
+
+    return { V: totalV, R: totalR, I, P, closed: true, wireFlow };
   }
 
   /* ── Electron path along wires ── */
@@ -641,21 +647,32 @@ function arrowHead(ctx, x1, y1, x2, y2, sz) {
       ctx.lineTo(p2.x, p2.y);
       ctx.stroke();
 
-      // Electrons on this wire
+      // Electrons on this wire (drawn as arrows)
       if (sol && current > 0.001) {
+        // flowForward: true  → electrons animate from n1 toward n2
+        //              false → electrons animate from n2 toward n1
+        // Determined entirely by the directed DFS from battery (+) in solveCircuit —
+        // completely independent of which node the user clicked first when drawing.
+        const flowForward = sol.wireFlow ? (sol.wireFlow[w.id] !== false) : true;
+        const fromPt = flowForward ? p1 : p2;
+        const toPt   = flowForward ? p2 : p1;
+        const dx = toPt.x - fromPt.x;
+        const dy = toPt.y - fromPt.y;
+        const len = Math.sqrt(dx * dx + dy * dy);
+
         const wireElectrons = electrons.filter(el => el.wireId === w.id);
         wireElectrons.forEach(el => {
           const t = (el.t + ePhase) % 1;
-          const ex = p1.x + (p2.x - p1.x) * t;
-          const ey = p1.y + (p2.y - p1.y) * t;
-          ctx.beginPath();
-          ctx.arc(ex, ey, 4, 0, Math.PI * 2);
-          ctx.fillStyle = '#80deea';
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(ex, ey, 7, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(128,222,234,0.15)';
-          ctx.fill();
+          const ex = fromPt.x + dx * t;
+          const ey = fromPt.y + dy * t;
+          if (len > 0) {
+            const unitDx = dx / len;
+            const unitDy = dy / len;
+            const arrowStartX = ex - unitDx * 10;
+            const arrowStartY = ey - unitDy * 10;
+            ctx.fillStyle = '#80deea';
+            arrowHead(ctx, arrowStartX, arrowStartY, ex, ey, 8);
+          }
         });
       }
     });
@@ -715,7 +732,7 @@ function arrowHead(ctx, x1, y1, x2, y2, sz) {
     ctx.stroke();
 
     // Type-specific drawing
-    if (comp.type === 'battery')   drawBatterySymbol(ctx, comp, current);
+    if (comp.type === 'battery')        drawBatterySymbol(ctx, comp, current);
     else if (comp.type === 'resistor')  drawResistorSymbol(ctx, comp);
     else if (comp.type === 'bulb')      drawBulbSymbol(ctx, comp, current, sol);
     else if (comp.type === 'switch')    drawSwitchSymbol(ctx, comp);
@@ -757,21 +774,22 @@ function arrowHead(ctx, x1, y1, x2, y2, sz) {
   }
 
   function drawBatterySymbol(ctx, comp, current) {
-    // Long/short lines
+    // Long/short lines (flipped: - on left, + on right)
     ctx.strokeStyle = '#ffa000';
-    ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(-20, -14); ctx.lineTo(-20, 14); ctx.stroke();
     ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(-8, -9); ctx.lineTo(-8, 9); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-20, -9); ctx.lineTo(-20, 9); ctx.stroke();
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(-8, -14); ctx.lineTo(-8, 14); ctx.stroke();
+    ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(8, -14); ctx.lineTo(8, 14); ctx.stroke();
     ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(20, -9); ctx.lineTo(20, 9); ctx.stroke();
-    // + / -
-    ctx.fillStyle = '#ef5350'; ctx.font = 'bold 11px Inter,sans-serif';
+    // - / +
+    ctx.fillStyle = '#42a5f5'; ctx.font = 'bold 11px Inter,sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('+', -COMP_W + 10, 0);
-    ctx.fillStyle = '#42a5f5';
-    ctx.fillText('−', COMP_W - 10, 0);
+    ctx.fillText('−', -COMP_W + 10, 0);
+    ctx.fillStyle = '#ef5350';
+    ctx.fillText('+', COMP_W - 10, 0);
   }
 
   function drawResistorSymbol(ctx, comp) {
